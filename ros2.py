@@ -60,7 +60,6 @@ class MyNode(hm.HelloNode):
 
 
 if __name__ == '__main__':
-    rclpy.init()
     node = MyNode()
     node.main()
-    rclpy.shutdown()
+
