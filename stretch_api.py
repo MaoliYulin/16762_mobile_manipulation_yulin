@@ -46,11 +46,11 @@ robot.arm.wait_until_at_setpoint()
 
 robot.end_of_arm.move_to('stretch_gripper', 80)
 robot.push_command()
-robot.gripper.wait_until_at_setpoint()
+robot.end_of_arm.wait_until_at_setpoint()
 
 robot.end_of_arm.move_to('stretch_gripper', 0)
 robot.push_command()
-robot.gripper.wait_until_at_setpoint()
+robot.end_of_arm.wait_until_at_setpoint()
 
 
 robot.head.move_by('head_pan', np.radians(30))
