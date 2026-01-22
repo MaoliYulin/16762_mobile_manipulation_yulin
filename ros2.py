@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+
+import time
+import numpy as np
+import rclpy
+import hello_helpers.hello_misc as hm
+
 """
 Move the arm and gripper back to it’s ‘stow’ position. This can be done with a single 
 line of code.
@@ -17,82 +24,41 @@ Once in stow, drive the robot forward 0.5 meters, rotate 180 degrees, then drive
 meters forward (back to the starting position).
 """
 
-import rclpy, tf2_ros
-from rclpy.node import Node
-import hello_helpers.hello_misc as hm
-import numpy as np
-import time
-
-
-class MoveNode(Node):
+class MyNode(hm.HelloNode):
     def __init__(self):
-        super().__init__('stow_and_move_node')
-        self.robot = hm.setup_robot(self)
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+        hm.HelloNode.__init__(self)
 
-    def stow_and_move(self):
-        self.robot.stow()
+    def main(self):
+        hm.HelloNode.main(self, 'my_node', 'my_node', wait_for_first_pointcloud=False)
+
+        self.stow_the_robot()
         time.sleep(3)
 
-        self.get_logger().info('start arm move and lift up')
-        self.robot.arm.move_to(0.5)
-        self.robot.lift.move_to(1.1)
-        self.robot.push_command()
-        self.robot.arm.wait_until_at_setpoint()
-        self.robot.lift.wait_until_at_setpoint()
 
-        self.get_logger().info('start end of arm rotations')
-        self.robot.end_of_arm.move_to('wrist_yaw', np.radians(45)) 
-        self.robot.push_command()
-        self.robot.arm.wait_until_at_setpoint()
+        self.move_to_pose({'joint_arm': 0.6, 'joint_lift': 1.1}, blocking=True)
 
-        self.robot.end_of_arm.move_to('wrist_pitch', np.radians(45))
-        self.robot.push_command()
-        self.robot.arm.wait_until_at_setpoint()
 
-        self.robot.end_of_arm.move_to('wrist_roll', np.radians(45))
-        self.robot.push_command()
-        self.robot.arm.wait_until_at_setpoint()
+        self.move_to_pose({'joint_wrist_yaw': np.radians(45)}, blocking=True)
+        self.move_to_pose({'joint_wrist_pitch': -np.radians(45)}, blocking=True)
+        self.move_to_pose({'joint_wrist_roll': np.radians(45)}, blocking=True)
 
-        self.get_logger().info('start gripper open and close')
-        self.robot.end_of_arm.move_to('stretch_gripper', 80)
-        self.robot.push_command()
-        self.robot.gripper.wait_until_at_setpoint()
 
-        self.robot.end_of_arm.move_to('stretch_gripper', 0)
-        self.robot.push_command()
-        self.robot.gripper.wait_until_at_setpoint()
+        self.move_to_pose({'joint_gripper': 0.04}, blocking=True) 
+        self.move_to_pose({'joint_gripper': 0.0}, blocking=True)
 
-        self.get_logger().info('start head movements')
-        self.robot.head.move_by('head_pan', np.radians(30))
-        self.robot.push_command()
-        self.robot.head.wait_until_at_setpoint()
+        self.move_to_pose({'joint_head_pan': np.radians(45)}, blocking=True)
+        self.move_to_pose({'joint_head_tilt': -np.radians(45)}, blocking=True)
 
-        self.robot.head.move_by('head_tilt', np.radians(30)) 
-        self.robot.push_command()
-        self.robot.head.wait_until_at_setpoint()
-
-        self.get_logger().info('returning to stow position')
-        self.robot.stow()
+        self.stow_the_robot()
         time.sleep(3)
 
-        self.get_logger().info('starting final motion')
-        self.robot.base.go_forward(0.5)
-        self.robot.base.rotate_in_place(np.radians(180))
-        self.robot.base.go_forward(0.5)
-        self.robot.push_command()
-        self.robot.base.wait_until_at_setpoint()
+        self.drive_straight(0.5)
+        self.rotate_in_place(np.radians(180))
+        self.drive_straight(0.5)
 
-        self.get_logger().info('Motion sequence complete')
-        self.robot.stop()
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = MoveNode()
-    rclpy.spin_once(node)
-    node.destroy_node()
-    rclpy.shutdown()
 
 if __name__ == '__main__':
-    main()  
+    rclpy.init()
+    node = MyNode()
+    node.main()
+    rclpy.shutdown()
