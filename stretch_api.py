@@ -32,19 +32,19 @@ robot.push_command()
 robot.arm.wait_until_at_setpoint()
 robot.lift.wait_until_at_setpoint()
 
-robot.end_of_arm.move_to('wrist_yaw', np.radians(45)) 
+robot.end_of_arm.move_to('wrist_yaw', np.radians(90)) 
 robot.push_command()
-robot.arm.wait_until_at_setpoint()
+robot.end_of_arm.wait_until_at_setpoint()
 time.sleep(2)
 
 robot.end_of_arm.move_to('wrist_pitch', np.radians(45)) 
 robot.push_command()
-robot.arm.wait_until_at_setpoint()
+robot.end_of_arm.wait_until_at_setpoint()
 time.sleep(2)
 
 robot.end_of_arm.move_to('wrist_roll', np.radians(45))
 robot.push_command()
-robot.arm.wait_until_at_setpoint()
+robot.end_of_arm.wait_until_at_setpoint()
 time.sleep(2)
 
 robot.end_of_arm.move_to('stretch_gripper', 100)

@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
 
-import time
-import numpy as np
-import rclpy
-import hello_helpers.hello_misc as hm
 
 """
 Move the arm and gripper back to it’s ‘stow’ position. This can be done with a single 
@@ -24,52 +19,54 @@ Once in stow, drive the robot forward 0.5 meters, rotate 180 degrees, then drive
 meters forward (back to the starting position).
 """
 
-class MyNode(hm.HelloNode):
-    def __init__(self):
-        hm.HelloNode.__init__(self)
-        self._did_run = False
-
-    def main(self):
-        hm.HelloNode.main(self, 'my_node', 'my_node', wait_for_first_pointcloud=False)
-
-        # 关键：注册一个一次性的定时器，让动作在 node 启动后执行
-        self.create_timer(0.5, self._run_once)
-
-        # 让节点保持运行（否则 timer 不会触发）
-        rclpy.spin(self)
-
-    def _run_once(self):
-        if self._did_run:
-            return
-        self._did_run = True
-
-        # ---- 你的直写动作逻辑（原封不动放这） ----
-        self.move_to_pose({'joint_lift': 0.5}, blocking=True)
-        self.move_to_pose({'joint_arm': 0.35}, blocking=True)
-
-        self.move_to_pose({'joint_wrist_yaw': np.pi/4}, blocking=True)
-        self.move_to_pose({'joint_wrist_pitch': -np.pi/4}, blocking=True)
-        self.move_to_pose({'joint_wrist_roll': np.pi/4}, blocking=True)
-
-        self.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
-        self.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
-
-        self.move_to_pose({'joint_head_pan': np.pi/4}, blocking=True)
-        self.move_to_pose({'joint_head_tilt': -np.pi/6}, blocking=True)
-
-        self.stow_the_robot()
-        time.sleep(2)
-
-        self.drive_straight(0.5)
-        self.rotate_in_place(np.pi)
-        self.drive_straight(0.5)
-
-        self.get_logger().info("DONE, shutting down.")
-        rclpy.shutdown()
+#!/usr/bin/env python3
+import time
+import numpy as np
+import hello_helpers.hello_misc as hm
 
 
+node = hm.HelloNode.quick_create('temp')
 
-if __name__ == '__main__':
-    node = MyNode()
-    node.main()
+# ---- 0) stow ----
+node.stow_the_robot()
+time.sleep(2)
+
+# ---- 1) arm out + lift up (same time) ----
+node.move_to_pose({'joint_arm': 0.52, 'joint_lift': 1.1}, blocking=True)
+
+# ---- 2) wrist motors one at a time (relative move using joint_state) ----
+idx = node.joint_state.name.index('joint_wrist_yaw')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(45)}, blocking=True)
+
+idx = node.joint_state.name.index('joint_wrist_pitch')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'joint_wrist_pitch': cur + np.deg2rad(45)}, blocking=True)
+
+idx = node.joint_state.name.index('joint_wrist_roll')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(30)}, blocking=True)
+
+# ---- 3) gripper open then close ----
+# slide 写的是 finger_left / finger_right，你用你系统里存在的那个
+node.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
+node.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
+
+# ---- 4) head pan + tilt (relative) ----
+idx = node.joint_state.name.index('joint_head_pan')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'joint_head_pan': cur + np.deg2rad(30)}, blocking=True)
+
+idx = node.joint_state.name.index('joint_head_tilt')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'joint_head_tilt': cur + np.deg2rad(20)}, blocking=True)
+
+# ---- 5) stow again ----
+node.stow_the_robot()
+time.sleep(2)
+
+# ---- 6) base: forward 0.5, rotate 180deg, forward 0.5 ----
+node.drive_straight(0.5)
+node.rotate_in_place(np.pi)
+node.drive_straight(0.5)
 
