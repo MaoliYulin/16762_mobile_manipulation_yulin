@@ -27,36 +27,46 @@ meters forward (back to the starting position).
 class MyNode(hm.HelloNode):
     def __init__(self):
         hm.HelloNode.__init__(self)
+        self._did_run = False
 
     def main(self):
         hm.HelloNode.main(self, 'my_node', 'my_node', wait_for_first_pointcloud=False)
 
+        # 关键：注册一个一次性的定时器，让动作在 node 启动后执行
+        self.create_timer(0.5, self._run_once)
+
+        # 让节点保持运行（否则 timer 不会触发）
+        rclpy.spin(self)
+
+    def _run_once(self):
+        if self._did_run:
+            return
+        self._did_run = True
+
+        # ---- 你的直写动作逻辑（原封不动放这） ----
+        self.move_to_pose({'joint_lift': 0.5}, blocking=True)
+        self.move_to_pose({'joint_arm': 0.35}, blocking=True)
+
+        self.move_to_pose({'joint_wrist_yaw': np.pi/4}, blocking=True)
+        self.move_to_pose({'joint_wrist_pitch': -np.pi/4}, blocking=True)
+        self.move_to_pose({'joint_wrist_roll': np.pi/4}, blocking=True)
+
+        self.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
+        self.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
+
+        self.move_to_pose({'joint_head_pan': np.pi/4}, blocking=True)
+        self.move_to_pose({'joint_head_tilt': -np.pi/6}, blocking=True)
+
         self.stow_the_robot()
-        time.sleep(3)
-
-
-        self.move_to_pose({'joint_arm': 0.6, 'joint_lift': 1.1}, blocking=True)
-
-
-        self.move_to_pose({'joint_wrist_yaw': np.radians(45)}, blocking=True)
-        self.move_to_pose({'joint_wrist_pitch': -np.radians(45)}, blocking=True)
-        self.move_to_pose({'joint_wrist_roll': np.radians(45)}, blocking=True)
-
-
-        self.move_to_pose({'joint_gripper': 0.04}, blocking=True) 
-        self.move_to_pose({'joint_gripper': 0.0}, blocking=True)
-
-        self.move_to_pose({'joint_head_pan': np.radians(45)}, blocking=True)
-        self.move_to_pose({'joint_head_tilt': -np.radians(45)}, blocking=True)
-
-        self.stow_the_robot()
-        time.sleep(3)
+        time.sleep(2)
 
         self.drive_straight(0.5)
-        self.rotate_in_place(np.radians(180))
+        self.rotate_in_place(np.pi)
         self.drive_straight(0.5)
 
-        self.rotate_in_place(np.radians(180))
+        self.get_logger().info("DONE, shutting down.")
+        rclpy.shutdown()
+
 
 
 if __name__ == '__main__':
