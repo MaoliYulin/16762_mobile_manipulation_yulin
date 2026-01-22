@@ -56,6 +56,8 @@ class MyNode(hm.HelloNode):
         self.rotate_in_place(np.radians(180))
         self.drive_straight(0.5)
 
+        self.rotate_in_place(np.radians(180))
+
 
 if __name__ == '__main__':
     rclpy.init()
