@@ -27,14 +27,11 @@ import hello_helpers.hello_misc as hm
 
 node = hm.HelloNode.quick_create('temp')
 
-# ---- 0) stow ----
 node.stow_the_robot()
 time.sleep(2)
 
-# ---- 1) arm out + lift up (same time) ----
 node.move_to_pose({'joint_arm': 0.52, 'joint_lift': 1.1}, blocking=True)
 
-# ---- 2) wrist motors one at a time (relative move using joint_state) ----
 idx = node.joint_state.name.index('joint_wrist_yaw')
 cur = node.joint_state.position[idx]
 node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(45)}, blocking=True)
@@ -47,12 +44,9 @@ idx = node.joint_state.name.index('joint_wrist_roll')
 cur = node.joint_state.position[idx]
 node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(30)}, blocking=True)
 
-# ---- 3) gripper open then close ----
-# slide 写的是 finger_left / finger_right，你用你系统里存在的那个
 node.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
 node.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
 
-# ---- 4) head pan + tilt (relative) ----
 idx = node.joint_state.name.index('joint_head_pan')
 cur = node.joint_state.position[idx]
 node.move_to_pose({'joint_head_pan': cur + np.deg2rad(30)}, blocking=True)
@@ -61,12 +55,11 @@ idx = node.joint_state.name.index('joint_head_tilt')
 cur = node.joint_state.position[idx]
 node.move_to_pose({'joint_head_tilt': cur + np.deg2rad(20)}, blocking=True)
 
-# ---- 5) stow again ----
 node.stow_the_robot()
 time.sleep(2)
 
-# ---- 6) base: forward 0.5, rotate 180deg, forward 0.5 ----
 node.drive_straight(0.5)
 node.rotate_in_place(np.pi)
 node.drive_straight(0.5)
+node.rotate_in_place(np.pi)
 
