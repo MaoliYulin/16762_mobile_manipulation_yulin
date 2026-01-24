@@ -37,7 +37,7 @@ print("F) after arm+lift")
 
 idx = node.joint_state.name.index('joint_wrist_yaw')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(30)}, blocking=True)
+node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(45)}, blocking=True)
 print("G) after wrist_yaw")
 
 idx = node.joint_state.name.index('joint_wrist_pitch')
@@ -50,7 +50,7 @@ cur = node.joint_state.position[idx]
 node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(30)}, blocking=True)
 print("I) after wrist_roll")
 
-node.move_to_pose({'joint_gripper_finger_left': 0.08}, blocking=True)
+node.move_to_pose({'joint_gripper_finger_left': 0.3}, blocking=True)
 node.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
 print("J) after gripper")
 
@@ -67,9 +67,17 @@ node.stow_the_robot()
 time.sleep(2)
 print("L) after stow 2")
 
-node.drive_straight(0.5)
-node.rotate_in_place(np.pi)
-node.drive_straight(0.5)
-print("M) done")
+idx = node.joint_state.name.index('translate_mobile_base')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'translate_mobile_base': cur + 0.5}, blocking=True)
+
+idx = node.joint_state.name.index('rotate_mobile_base')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'rotate_mobile_base': cur + np.pi}, blocking=True)
+
+idx = node.joint_state.name.index('translate_mobile_base')
+cur = node.joint_state.position[idx]
+node.move_to_pose({'translate_mobile_base': cur + 0.5}, blocking=True)
+
 
 
