@@ -37,20 +37,20 @@ print("F) after arm+lift")
 
 idx = node.joint_state.name.index('joint_wrist_yaw')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(20)}, blocking=True)
+node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(30)}, blocking=True)
 print("G) after wrist_yaw")
 
 idx = node.joint_state.name.index('joint_wrist_pitch')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_pitch': cur - np.deg2rad(20)}, blocking=True)
+node.move_to_pose({'joint_wrist_pitch': cur - np.deg2rad(30)}, blocking=True)
 print("H) after wrist_pitch")
 
 idx = node.joint_state.name.index('joint_wrist_roll')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(20)}, blocking=True)
+node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(30)}, blocking=True)
 print("I) after wrist_roll")
 
-node.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
+node.move_to_pose({'joint_gripper_finger_left': 0.08}, blocking=True)
 node.move_to_pose({'joint_gripper_finger_left': 0.0}, blocking=True)
 print("J) after gripper")
 
