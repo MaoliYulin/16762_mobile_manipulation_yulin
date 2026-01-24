@@ -67,17 +67,10 @@ node.stow_the_robot()
 time.sleep(2)
 print("L) after stow 2")
 
-idx = node.joint_state.name.index('translate_mobile_base')
-cur = node.joint_state.position[idx]
-node.move_to_pose({'translate_mobile_base': cur + 0.5}, blocking=True)
+node.move_to_pose({'translate_mobile_base': 0.2}, blocking=True)
 
-idx = node.joint_state.name.index('rotate_mobile_base')
-cur = node.joint_state.position[idx]
-node.move_to_pose({'rotate_mobile_base': cur + np.pi}, blocking=True)
+node.move_to_pose({'rotate_mobile_base': np.pi}, blocking=True)
 
-idx = node.joint_state.name.index('translate_mobile_base')
-cur = node.joint_state.position[idx]
-node.move_to_pose({'translate_mobile_base': cur + 0.5}, blocking=True)
-
+node.move_to_pose({'translate_mobile_base': 0.2}, blocking=True)
 
 
