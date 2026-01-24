@@ -28,15 +28,6 @@ print("A) before quick_create")
 node = hm.HelloNode.quick_create('temp')
 print("B) after quick_create")
 
-# 等 joint_states 到来（不等这个，你后面 index() 很容易直接卡/挂）
-t0 = time.time()
-while (node.joint_state is None) or (len(node.joint_state.name) == 0):
-    if time.time() - t0 > 10:
-        print("ERROR: still no /joint_states after 10s (ROS2 not publishing joint_states?)")
-        break
-    time.sleep(0.1)
-print("C) got joint_states")
-
 print("D) before stow")
 node.stow_the_robot()
 print("E) after stow")
@@ -46,17 +37,17 @@ print("F) after arm+lift")
 
 idx = node.joint_state.name.index('joint_wrist_yaw')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(45)}, blocking=True)
+node.move_to_pose({'joint_wrist_yaw': cur + np.deg2rad(20)}, blocking=True)
 print("G) after wrist_yaw")
 
 idx = node.joint_state.name.index('joint_wrist_pitch')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_pitch': cur + np.deg2rad(45)}, blocking=True)
+node.move_to_pose({'joint_wrist_pitch': cur - np.deg2rad(20)}, blocking=True)
 print("H) after wrist_pitch")
 
 idx = node.joint_state.name.index('joint_wrist_roll')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(30)}, blocking=True)
+node.move_to_pose({'joint_wrist_roll': cur + np.deg2rad(20)}, blocking=True)
 print("I) after wrist_roll")
 
 node.move_to_pose({'joint_gripper_finger_left': 0.04}, blocking=True)
