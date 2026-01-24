@@ -60,7 +60,7 @@ node.move_to_pose({'joint_head_pan': cur + np.deg2rad(30)}, blocking=True)
 
 idx = node.joint_state.name.index('joint_head_tilt')
 cur = node.joint_state.position[idx]
-node.move_to_pose({'joint_head_tilt': cur + np.deg2rad(20)}, blocking=True)
+node.move_to_pose({'joint_head_tilt': cur + np.deg2rad(35)}, blocking=True)
 print("K) after head")
 
 node.stow_the_robot()
