@@ -67,10 +67,10 @@ node.stow_the_robot()
 time.sleep(2)
 print("L) after stow 2")
 
-node.move_to_pose({'translate_mobile_base': 0.2}, blocking=True)
+node.move_to_pose({'translate_mobile_base': 0.5}, blocking=True)
 
 node.move_to_pose({'rotate_mobile_base': np.pi}, blocking=True)
 
-node.move_to_pose({'translate_mobile_base': 0.2}, blocking=True)
+node.move_to_pose({'translate_mobile_base': 0.5}, blocking=True)
 
 
