@@ -27,10 +27,18 @@ import hello_helpers.hello_misc as hm
 
 node = hm.HelloNode.quick_create('temp')
 
+print("1) before stow")
 node.stow_the_robot()
-time.sleep(2)
+print("1) after stow")
 
+print("2) before arm+lift")
 node.move_to_pose({'joint_arm': 0.52, 'joint_lift': 1.1}, blocking=True)
+print("2) after arm+lift")
+
+print("3) before read joint_state")
+print(len(node.joint_state.name), node.joint_state.name[:5])
+print("3) after read joint_state")
+
 
 idx = node.joint_state.name.index('joint_wrist_yaw')
 cur = node.joint_state.position[idx]
